@@ -1,0 +1,44 @@
+---
+title: CLI reference
+description: The nest-boost commands and their options.
+---
+
+# CLI reference
+
+```
+nest-boost install     Detect packages, configure agents, install guidelines + skills
+nest-boost update      Re-sync guidelines + skills for the recorded agents
+nest-boost mcp         Run the MCP server over stdio (used by agents)
+```
+
+## `install` options
+
+```
+--agents <a,b>        Preselect agents (claude,cursor,codex,gemini,generic)
+--arch <style>        Architecture style (standard,cqrs,hexagonal)
+--auth <strategy>     Auth strategy (none,passport,better-auth)
+--test-layout <id>    Test layout (colocated,colocated-subfolder,central)
+--runner <bunx|npx>   MCP launcher for the generated config (default: npx)
+--default-project <n> Monorepo: the app the MCP boots by default
+--fetch-auth-skill    Fetch the official community skill for the auth strategy
+--entry <path>        Single-app: root module file (default: src/app.module.ts)
+--module <name>       Single-app: root module export (default: AppModule)
+--yes                 Accept defaults, skip prompts
+```
+
+## How it works
+
+```
+npx @mgvdev/nest-boost install
+        │
+        ├─ detect()            read package.json → ecosystem packages + versions
+        ├─ prompt              architecture · auth · agents  (or flags)
+        ├─ compose guidelines  core + version + arch + auth + per-package
+        ├─ resolve skills      baseline + gated + arch + auth + local (.nest-boost/skills)
+        └─ per agent           write .mcp.json · guidelines · copy skills
+
+npx @mgvdev/nest-boost mcp   (run by the agent)
+        │
+        └─ NestFactory.create(AppModule, { preview: true, snapshot: true })
+                 └─ ModulesContainer + reflection → application_info · list_routes · module_graph
+```

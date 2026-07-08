@@ -1,0 +1,105 @@
+---
+title: MCP server
+description: The stdio MCP server that boots your app and exposes introspection tools.
+---
+
+# MCP server
+
+`nest-boost mcp` starts a stdio MCP server. It boots your app in **preview mode**
+(`NestFactory.create(AppModule, { preview: true, snapshot: true })`), which instantiates the
+module/provider/controller graph **without** running lifecycle hooks (`onModuleInit`, …) or
+opening database/network connections — safe to run against a real application.
+
+## Tools
+
+| Tool | Description |
+| --- | --- |
+| `application_info` | Bun/Node/Nest versions, detected packages, the workspace layout (apps + libraries), and module/controller/provider/route counts |
+| `list_routes` | Every HTTP route: method, path, controller, handler, owning module, and attached guards / interceptors / pipes. Filter by method or path |
+| `module_graph` | Every module with its controllers, providers (scope + whether exported), imported modules, and exported tokens |
+| `nest_cli` | List and run whitelisted `nest` CLI commands (`generate`, `build`, `info`) |
+| `db_schema` | Read the database schema — SQL tables/columns/keys, or MongoDB collections with sampled fields |
+| `db_query` | Run a **read-only** query (SELECT/WITH/… for SQL, or a MongoDB `find`) and return rows |
+| `evaluate` | REPL/Tinker-style: run a snippet in the booted app (`await $(UsersService).findAll()`). **Development-only** — real boot, arbitrary code |
+
+In a **monorepo**, `list_routes` and `module_graph` accept a `project` argument to target a
+specific application (omitted → the workspace default project); `application_info` lists
+every app and library.
+
+```jsonc
+list_routes  { "project": "api" }      // routes of the api app
+module_graph { "project": "worker" }   // DI graph of the worker app
+```
+
+## Token-economical output
+
+All tools return compact JSON (no indentation), omit empty/false fields, and drop
+framework-internal providers. `list_routes` and `module_graph` also accept
+`format: "text"` for a dense one-line-per-item listing — roughly a **60–70% token reduction**
+versus pretty-printed JSON on typical apps.
+
+```jsonc
+list_routes { "format": "text" }
+```
+
+## Registering the server
+
+Most editors that speak MCP pick up the generated config automatically. To register
+manually:
+
+```json
+{
+  "mcpServers": {
+    "nest-boost": { "command": "npx", "args": ["-y", "@mgvdev/nest-boost", "mcp"] }
+  }
+}
+```
+
+The generated config uses `npx` by default; pass `--runner bunx` at install to use `bunx`
+instead. The MCP server imports your app's TypeScript and boots Nest — under Node it loads
+`.ts` through [`tsx`](https://tsx.is) (which emits the decorator metadata NestJS DI needs),
+so your `tsconfig.json` must have `emitDecoratorMetadata: true` (standard in every Nest app).
+
+## Database tools
+
+`db_schema` and `db_query` give the agent grounded knowledge of your **actual** database —
+the schema after migrations, and real rows — independent of the ORM you use.
+
+- **Connection** is resolved from `nest-boost.json` `database.url`, else `DATABASE_URL`, else
+  a project `.env`.
+- **Engines**: PostgreSQL, MySQL/MariaDB, SQLite, MongoDB. Dialect inferred from the URL.
+  Drivers (`pg`, `mysql2`, `mongodb`) load from your project's `node_modules`; SQLite uses
+  `node:sqlite` (Node 22+) or `better-sqlite3`.
+- **Read-only, enforced**: `db_query` rejects anything but a single read statement and runs
+  it inside a read-only transaction. Results are capped.
+
+```jsonc
+db_schema {}                                       // all tables/collections
+db_query  { "sql": "SELECT id, email FROM users LIMIT 10" }
+db_query  { "collection": "users", "filter": { "active": true } }   // MongoDB
+```
+
+## `evaluate` — REPL / Tinker for the agent
+
+Like Laravel Tinker, `evaluate` runs a snippet **inside your booted app** and returns the
+result. `get(Token)` / `$(Token)` resolve a provider, and every provider/controller class is
+available by name:
+
+```jsonc
+evaluate { "code": "await $(UsersService).findAll()" }
+evaluate { "code": "const s = $(BillingService); return s.total(42);" }
+```
+
+Built on `NestFactory.createApplicationContext` (DI + lifecycle, no HTTP). TypeScript is
+transpiled with the standard `typescript` compiler, `await` is supported, and the result is
+serialized safely (depth-limited, circular-safe).
+
+**It is development-only and unguarded by design.** Unlike the other tools it boots the app
+*for real* (lifecycle hooks + live DB/network) and runs *arbitrary code* — it can mutate
+data. It is **enabled by default** but **blocked when `NODE_ENV=production`**. Turn it off:
+
+```bash
+npx @mgvdev/nest-boost install --disable-evaluate
+# or in nest-boost.json:
+{ "evaluate": { "enabled": false } }
+```
