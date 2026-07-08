@@ -23,6 +23,14 @@ import path from "node:path";
 /** @type {Array<{slug:string,repo:string,branch:string,dir:string,title:string,indexFile:string}>} */
 const PACKAGES = [
   {
+    slug: "nest-boost",
+    repo: "https://github.com/mgvdev/nest-boost.git",
+    branch: "main",
+    dir: "documentation",
+    title: "nest-boost",
+    indexFile: "README.md",
+  },
+  {
     slug: "nestjs-ai",
     repo: "https://github.com/mgvdev/nestjs-ai.git",
     branch: "main",

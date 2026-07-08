@@ -1,5 +1,0 @@
-{
-  "title": "nest-boost",
-  "root": true,
-  "pages": ["index", "installation", "cli", "mcp-server", "guidelines", "skills"]
-}
