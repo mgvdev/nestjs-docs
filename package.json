@@ -4,10 +4,11 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "dev": "waku dev",
-    "build": "waku build",
+    "sync:docs": "bun scripts/sync-docs.mjs",
+    "dev": "bun run sync:docs && waku dev",
+    "build": "bun run sync:docs && waku build",
     "start": "waku start",
-    "types:check": "fumadocs-mdx && tsc --noEmit"
+    "types:check": "bun run sync:docs && fumadocs-mdx && tsc --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
