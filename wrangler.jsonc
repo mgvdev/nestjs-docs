@@ -1,0 +1,6 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nestjs-docs",
+  "compatibility_date": "2025-11-17",
+  "compatibility_flags": ["nodejs_compat"]
+}

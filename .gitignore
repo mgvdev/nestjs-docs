@@ -3,4 +3,5 @@
 
 dist
 .source
+.wrangler
 src/pages.gen.ts
