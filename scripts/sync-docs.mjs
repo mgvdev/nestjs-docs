@@ -38,6 +38,14 @@ const PACKAGES = [
     title: "nestjs-ai",
     indexFile: "README.md",
   },
+  {
+    slug: "nestkit",
+    repo: "https://github.com/mgvdev/nestkit.git",
+    branch: "main",
+    dir: "documentation",
+    title: "nestkit",
+    indexFile: "index.md",
+  },
 ];
 
 const root = process.cwd();
