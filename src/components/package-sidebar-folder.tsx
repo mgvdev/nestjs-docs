@@ -55,6 +55,10 @@ export function PackageSidebarFolder({
     </span>
   );
 
+  // Make the trigger/link a flex row so the chevron (rendered by Fumadocs with
+  // `ms-auto`) is pushed to the right instead of wrapping below the label.
+  const rowClass = "flex w-full items-center";
+
   return (
     <SidebarFolder
       collapsible={item.collapsible}
@@ -66,11 +70,12 @@ export function PackageSidebarFolder({
           href={item.index.url}
           active={isActive(item.index.url, pathname)}
           external={item.index.external}
+          className={rowClass}
         >
           {label}
         </SidebarFolderLink>
       ) : (
-        <SidebarFolderTrigger>{label}</SidebarFolderTrigger>
+        <SidebarFolderTrigger className={rowClass}>{label}</SidebarFolderTrigger>
       )}
       <SidebarFolderContent>{children}</SidebarFolderContent>
     </SidebarFolder>
