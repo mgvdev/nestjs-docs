@@ -48,6 +48,13 @@ export function PackageSidebarFolder({
     <Icon className="size-4 shrink-0" style={{ color: theme?.primary }} />
   ) : null;
 
+  const label = (
+    <span className="inline-flex items-center gap-2">
+      {icon}
+      {item.name}
+    </span>
+  );
+
   return (
     <SidebarFolder
       collapsible={item.collapsible}
@@ -60,14 +67,10 @@ export function PackageSidebarFolder({
           active={isActive(item.index.url, pathname)}
           external={item.index.external}
         >
-          {icon}
-          {item.name}
+          {label}
         </SidebarFolderLink>
       ) : (
-        <SidebarFolderTrigger>
-          {icon}
-          {item.name}
-        </SidebarFolderTrigger>
+        <SidebarFolderTrigger>{label}</SidebarFolderTrigger>
       )}
       <SidebarFolderContent>{children}</SidebarFolderContent>
     </SidebarFolder>
