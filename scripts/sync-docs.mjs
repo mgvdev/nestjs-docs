@@ -46,6 +46,14 @@ const PACKAGES = [
     title: "nestkit",
     indexFile: "index.md",
   },
+  {
+    slug: "nestjs-bun-adapter",
+    repo: "https://github.com/mgvdev/nest-bun-http-adapter.git",
+    branch: "main",
+    dir: "documentations",
+    title: "nestjs-bun-adapter",
+    indexFile: "README.md",
+  },
 ];
 
 const root = process.cwd();

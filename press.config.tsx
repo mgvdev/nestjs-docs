@@ -5,7 +5,7 @@ import { fumadocsMdx } from "fumapress/adapters/mdx";
 import { oramaSearchPlugin } from "fumapress/plugins/orama-search";
 import { llmsPlugin } from "fumapress/plugins/llms.txt";
 import { takumiPlugin } from "fumapress/plugins/takumi";
-import { Boxes, Rocket, Sparkles } from "lucide-react";
+import { Boxes, Rocket, Sparkles, Zap } from "lucide-react";
 import { docs } from "./.source/server";
 
 // Per-package theming for the sidebar section switcher: an accent color (used as
@@ -32,6 +32,11 @@ const PACKAGE_THEMES: Record<string, PackageTheme> = {
     primary: "hsl(173, 75%, 40%)",
     foreground: "hsl(0, 0%, 100%)",
     Icon: Boxes,
+  },
+  "nestjs-bun-adapter": {
+    primary: "hsl(32, 95%, 55%)",
+    foreground: "hsl(0, 0%, 100%)",
+    Icon: Zap,
   },
 };
 
