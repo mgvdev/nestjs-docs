@@ -1,44 +1,13 @@
-import { type CSSProperties, type ComponentType } from "react";
+import type { CSSProperties } from "react";
 import { defineConfig } from "fumapress";
 import { createDocsLayoutPage } from "fumapress/layouts/docs";
 import { fumadocsMdx } from "fumapress/adapters/mdx";
 import { oramaSearchPlugin } from "fumapress/plugins/orama-search";
 import { llmsPlugin } from "fumapress/plugins/llms.txt";
 import { takumiPlugin } from "fumapress/plugins/takumi";
-import { Boxes, Rocket, Sparkles, Zap } from "lucide-react";
 import { docs } from "./.source/server";
-
-// Per-package theming for the sidebar section switcher: an accent color (used as
-// the Fumadocs primary color across the whole layout when that section is active)
-// and an icon shown in the switcher. Keyed by the section slug (content/<slug>/).
-type PackageTheme = {
-  primary: string;
-  foreground: string;
-  Icon: ComponentType<{ className?: string; style?: CSSProperties }>;
-};
-
-const PACKAGE_THEMES: Record<string, PackageTheme> = {
-  "nest-boost": {
-    primary: "hsl(346, 84%, 55%)",
-    foreground: "hsl(0, 0%, 100%)",
-    Icon: Rocket,
-  },
-  "nestjs-ai": {
-    primary: "hsl(258, 82%, 62%)",
-    foreground: "hsl(0, 0%, 100%)",
-    Icon: Sparkles,
-  },
-  nestkit: {
-    primary: "hsl(173, 75%, 40%)",
-    foreground: "hsl(0, 0%, 100%)",
-    Icon: Boxes,
-  },
-  "nestjs-bun-adapter": {
-    primary: "hsl(32, 95%, 55%)",
-    foreground: "hsl(0, 0%, 100%)",
-    Icon: Zap,
-  },
-};
+import { PACKAGE_THEMES } from "./src/lib/package-themes";
+import { PackageSidebarFolder } from "./src/components/package-sidebar-folder";
 
 const slugOf = (url: string) => url.split("/").filter(Boolean)[0];
 
@@ -91,6 +60,11 @@ export default defineConfig({
                 } as CSSProperties,
               },
             }),
+            sidebar: {
+              components: {
+                Folder: PackageSidebarFolder,
+              },
+            },
             tabs: {
               transform(tab) {
                 const slug = slugOf(tab.url);
